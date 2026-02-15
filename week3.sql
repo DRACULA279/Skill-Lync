@@ -42,4 +42,6 @@ USE sakila;
 
 SOURCE sakila_backup.sql;
 
+
+So, With the help of CMD and MySQL Command Line Client, we can backup and restore the database.
 */
