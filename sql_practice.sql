@@ -33,4 +33,3 @@ SELECT SUBSTRING('skill_lync',3,4);
 
 SELECT actor_id, COALESCE(actor_id) from testdb.actor;
 
-SELECT GREATEST(actor_id) from actor;
