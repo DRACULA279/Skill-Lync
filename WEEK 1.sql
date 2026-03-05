@@ -1,3 +1,4 @@
+-- Active: 1767506199827@@127.0.0.1@3306@sakila
 SELECT 
     TABLE_NAME,
     COLUMN_NAME,

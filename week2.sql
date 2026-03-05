@@ -2,6 +2,8 @@ CREATE DATABASE testdb;
 use testdb;
 
 # Query to create table actor. 
+DROP DATABASE testdb;
+SELECT * FROM testdb.country;
 CREATE TABLE testdb.actor(
     actor_id SMALLINT UNSIGNED PRIMARY KEY,
     first_name VARCHAR(45) NOT NULL,

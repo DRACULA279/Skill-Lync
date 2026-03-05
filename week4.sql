@@ -11,5 +11,6 @@ SELECT REVERSE(title) from film;
 
 # 5. Write query to display number of days since the last update in table actor (schema - sakila).
 
-SELECT actor_id, DATEDIFF(CURDATE(), last_update) AS days_since_last_update
+SELECT actor_id, DATEDIFF(CURRENT_DATE(), last_update) AS days_since_last_update
 FROM actor;
+

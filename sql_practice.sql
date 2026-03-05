@@ -33,3 +33,29 @@ SELECT SUBSTRING('skill_lync',3,4);
 
 SELECT actor_id, COALESCE(actor_id) from testdb.actor;
 
+-- Group Concat, stddev, stddev_pop, stddev_samp, sum, var_pop, var_samp, variance
+
+SELECT STDDEV(actor_id), STDDEV_SAMP(actor_id), STDDEV_POP(actor_id), VARIANCE(actor_id), VARIANCE_SAMP(actor_id), VARIANCE_POP(actor_id) FROM actor;
+
+-- Sub query
+
+SELECT * FROM actor
+WHERE first_name LIKE 'P%E';
+
+SELECT * FROM (SELECT * FROM actor WHERE first_name LIKE 'P%E') AS p_e;
+
+WITH p_e AS (SELECT * FROM actor WHERE first_name LIKE 'p%e')
+SELECT * FROM p_e;
+
+SELECT CASE WHEN first_name LIKE 'p%e' THEN 'YES' ELSE 'NO' END AS p_e FROM actor;
+
+SELECT * FROM city;
+
+SELECT * FROM country;
+
+SELECT * FROM city WHERE country_id = ANY (SELECT country_id FROM country WHERE city.country_id = country.country_id);
+
+WITH cc AS (SELECT c.city_id, c.city, c.last_update city_last_update, co.country_id, co.country, co.last_update FROM city c JOIN country co ON c.country_id = co.country_id)
+SELECT * FROM cc;
+
+SELECT * FROM city WHERE country_id = ANY (SELECT country_id from country WHERE city.country_id = country.country_id);
