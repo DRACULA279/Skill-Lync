@@ -1,3 +1,5 @@
+-- Active: 1767506199827@@127.0.0.1@3306@sakila
+-- Active: 1767506199827@@127.0.0.1@3306@superstore
 USE testdb;
 
 SELECT HEX(country) hex , UNHEX(HEX(country)) unhex FROM country;
@@ -59,3 +61,101 @@ WITH cc AS (SELECT c.city_id, c.city, c.last_update city_last_update, co.country
 SELECT * FROM cc;
 
 SELECT * FROM city WHERE country_id = ANY (SELECT country_id from country WHERE city.country_id = country.country_id);
+
+-- Window functions -- lead, lag , ntile, row_number, rank, dense_rank,percent_rank, cume_dist, first_value, last_value, nth_value
+
+-- usually followed by over(partition by() or order by ())
+
+SELECT category, SUM(quantity) OVER(PARTITION BY category) FROM orders;
+
+/*
+Finding outliers
+MAX(Q3) - MAX(Q1) ---> Inter quartile range
+
+IQR *1.5 ---> Idenfying outliers 
+
+Lower limit/Threshhold --> Q1 - IQR*1.5
+
+Upper limit/Threshhold --> Q3 + IQR*1.5
+
+*/
+
+
+SELECT
+    column_name,
+    table_name 
+FROM information_schema.columns
+WHERE
+    tab_schema = 'sakila'
+    AND
+    `IS_NULLABLE` = 'YES'
+; -- To find all the columns with ability to have null values 
+
+--- Working with JSON format
+
+DROP TABLE IF EXISTS user_feedback;
+CREATE TABLE user_feedback
+(
+    id INT AUTO_INCREMENT PRIMARY KEY,
+    event_name VARCHAR(50),
+    name VARCHAR(50),
+    properties JSON,
+    browser JSON
+);
+
+SELECT * FROM user_feedback;
+
+INSERT INTO user_feedback
+(
+    event_name,
+    name,
+    properties,
+    browser
+)
+
+VALUES
+(
+    'purchase',
+    'VIKRAM',
+    '{"ip_address": "192.108.1.1"}',
+    '{
+        "name": "chrome", 
+        "version": "114.0.5735.199",
+        "resolution" : {"x" : 1600, "y": 900}
+    }'
+),
+
+(
+
+    'dispose',
+    'vikram',
+    '{"ip_address": "192.108.55.1"}',
+    '{
+        "name": "chrome", 
+        "version": "114.0.5735.199",
+        "resolution" : {"x" : 1600, "y": 900}
+    }'
+
+)
+
+;
+
+SELECT id, event_name, name, browser -> '$.name' AS browser_name, browser -> '$.resolution' AS system_resolution, properties ->> '$.ip_address' AS Ip_address
+FROM user_feedback;
+
+
+CREATE TABLE sakila.user_feedback LIKE superstore.user_feedback;
+INSERT INTO sakila.user_feedback
+SELECT * FROM superstore.user_feedback;
+DROP TABLE superstore.user_feedback;
+SELECT * FROM sakila.user_feedback;
+
+
+SELECT JSON_ARRAY('RAMESH', 5000, 'PAID'); -- array can be a tuple from python  but in json format --> inclusive of quotes  ''
+
+SELECT JSON_OBJECT('browser_name ','safari', 'name', 'vikram', 'resolution', '1600 x 900'); -- the comma seperated values would be resulted in a correct JSON format like kw and kwargs from python 
+
+SELECT JSON_VALID('null')--- To find whether everything is in the acceptable json format or not, 0 or 1.
+
+SELECT JSON_MERGE_PRESERVE('[5000, "vikram" ]', '{"notepad" : "vscode" }' );--- TO MERGE two different data types 
+
