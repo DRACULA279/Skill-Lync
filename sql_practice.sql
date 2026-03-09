@@ -159,3 +159,23 @@ SELECT JSON_VALID('null')--- To find whether everything is in the acceptable jso
 
 SELECT JSON_MERGE_PRESERVE('[5000, "vikram" ]', '{"notepad" : "vscode" }' );--- TO MERGE two different data types 
 
+-- stored procedures 
+-- The structure would be as follows
+/*
+
+DROP PROCEDURE IF EXISTS;
+
+CREATE PROCEDURE overpaid_employees AS 
+
+BEGIN 
+
+SELECT * FROM data_base.table
+WHERE salary > 100000
+
+END
+
+EXEC overpaid_employees;
+
+*/
+
+CALL rewards_report();
