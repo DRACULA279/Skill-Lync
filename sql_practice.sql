@@ -179,3 +179,140 @@ EXEC overpaid_employees;
 */
 
 CALL rewards_report();
+
+SELECT DATEDIFF(CURRENT_DATE,"2026-05-16");
+
+-- asssignmet 
+CREATE TABLE sakila.product(
+
+product_id INT PRIMARY KEY,
+
+name VARCHAR(50) NOT NULL
+
+category VARCHAR(50) NOT NULL,
+
+price DECIMAL(10,2) NOT NULL
+
+);
+
+-- 2. Write query to insert rows in table product, values can be taken from below shown Figure 2. (schema – sakila). 
+
+INSERT INTO sakila.product (product_id, name, category, price)
+
+VALUES 
+
+    (1, 'chair', 'furniture', 5000.02),
+
+    (2, 'table', 'furniture', 12000.50),
+
+    (3, 'lamp', 'decor', 1500.00)
+
+;
+
+-- 3. Write query to select result set from table product as shown in Figure 3. (schema – sakila). 
+
+SELECT * FROM product 
+WHERE price > 10000;
+
+-- 4. Write query to select result set from table product as shown in Figure 4. (schema – sakila).
+
+SELECT *
+
+FROM (
+
+    SELECT product_id,
+
+           name,
+
+           DENSE_RANK() OVER (PARTITION BY category ORDER BY price) AS luxury_rank
+
+    FROM products
+
+) AS ranked_products
+
+WHERE luxury_rank < 10;    --- assuming there are hundreds of products
+
+ 
+
+-- 5. Write query to select result set from table product as shown in Figure 5. (schema – sakila). 
+
+-- It would be better if I write a query to show all the concepts I've learned so far. 
+
+CREATE VIEW sakila.product_summary AS
+
+SELECT 
+
+    product_id,
+
+    name,
+
+    category,
+
+    price
+
+FROM sakila.product;
+
+
+WITH category_stats AS (
+
+    SELECT 
+
+        category,
+
+        COUNT(*) AS total_products,
+
+        AVG(price) AS avg_price,
+
+        MAX(price) AS max_price,
+
+        MIN(price) AS min_price
+
+    FROM sakila.product_summary
+
+    GROUP BY category
+
+)
+
+SELECT 
+
+    p.product_id,
+
+    p.name,
+
+    p.category,
+
+    p.price,
+
+    -- Aggregate values from CTE
+
+    cs.total_products,
+
+    cs.avg_price,
+
+    cs.max_price,
+
+    cs.min_price,
+
+    -- Window Functions
+
+    ROW_NUMBER() OVER (PARTITION BY p.category ORDER BY p.price DESC) AS row_num,
+
+    RANK() OVER (PARTITION BY p.category ORDER BY p.price DESC) AS rank_num,
+
+    DENSE_RANK() OVER (PARTITION BY p.category ORDER BY p.price DESC) AS dense_rank_num,
+
+    -- Analytical Window Functions
+
+    LAG(p.price) OVER (PARTITION BY p.category ORDER BY p.price) AS prev_price,
+
+    LEAD(p.price) OVER (PARTITION BY p.category ORDER BY p.price) AS next_price,
+
+    -- Aggregate Window Function
+
+    SUM(p.price) OVER (PARTITION BY p.category) AS total_category_value
+
+FROM sakila.product_summary p
+
+JOIN category_stats cs 
+
+ON p.category = cs.category;
