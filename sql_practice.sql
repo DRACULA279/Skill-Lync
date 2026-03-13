@@ -316,3 +316,231 @@ FROM sakila.product_summary p
 JOIN category_stats cs 
 
 ON p.category = cs.category;
+
+-- HAcker Rank -12032026
+
+--Query all columns for all American cities in the CITY table with populations larger than 100000. The CountryCode for America is USA. The CITY table is described as follows:
+--https://www.hackerrank.com/challenges/revising-the-select-query/problem?isFullScreen=true
+
+SELECT * FROM  city 
+WHERE CountryCode = 'USA' AND 
+population > 100000;
+
+--- Query the NAME field for all American cities in the CITY table with populations larger than 120000. The CountryCode for America is USA.
+
+SELECT name FROM city 
+WHERE population > 120000 AND 
+CountryCode = 'USA';
+
+--Query all columns (attributes) for every row in the CITY table.
+SELECT * FROM city;
+
+--Query all columns for a city in CITY with the ID 1661.
+
+SELECT * FROM city 
+WHERE id = 1661;
+
+--Query all attributes of every Japanese city in the CITY table. The COUNTRYCODE for Japan is JPN.
+
+SELECT * FROM city 
+WHERE CountryCode = 'JPN';
+
+--Query a list of CITY and STATE from the STATION table.
+
+SELECT city , state from station;
+
+--Query a list of CITY names from STATION for cities that have an even ID number. Print the results in any order, but exclude duplicates from the answer.
+
+USE testdb;
+SELECT DISTINCT(CITY_WITH_EVEN_CODE) FROM 
+(SELECT 
+CASE WHEN (city_id % 2 = 0) THEN city END AS CITY_WITH_EVEN_CODE 
+FROM testdb.city) AS ref
+ORDER BY 1 ASC;
+
+-- Find the difference between the total number of CITY entries in the table and the number of distinct CITY entries in the table.
+SELECT (COUNT(CITY)) - (COUNT(DISTINCT(CITY))) AS DIFF FROM STATION;
+
+--Query the list of CITY names starting with vowels (i.e., a, e, i, o, or u) from STATION. Your result cannot contain duplicates.
+
+SELECT DISTINCT(CITY) FROM STATION 
+WHERE CITY LIKE 'A%' OR CITY LIKE 'E%' OR CITY LIKE 'I%' OR CITY LIKE 'O%' OR CITY LIKE 'U%';
+
+-- Query the list of CITY names ending with vowels (a, e, i, o, u) from STATION. Your result cannot contain duplicates.
+
+SELECT DISTINCT(CITY) FROM STATION 
+WHERE CITY LIKE '%A' OR CITY LIKE '%E' OR CITY LIKE '%I' OR CITY LIKE '%O' OR CITY LIKE '%U';
+
+--Query the list of CITY names from STATION which have vowels (i.e., a, e, i, o, and u) as both their first and last characters. Your result cannot contain duplicates.
+
+SELECT DISTINCT(CITY) FROM STATION 
+WHERE (CITY LIKE '%A' OR CITY LIKE '%E' OR CITY LIKE '%I' OR CITY LIKE '%O' OR CITY LIKE '%U' ) AND (CITY LIKE 'A%' OR CITY LIKE 'E%' OR CITY LIKE 'I%' OR CITY LIKE 'O%' OR CITY LIKE 'U%')
+;
+
+--Query the list of CITY names from STATION that do not start with vowels. Your result cannot contain duplicates.
+
+SELECT DISTINCT(city) FROM station 
+WHERE CITY NOT LIKE 'A%' AND CITY NOT LIKE 'E%' AND CITY NOT LIKE 'I%' AND CITY NOT LIKE 'O%' AND CITY NOT LIKE 'U%';
+
+--Query the list of CITY names from STATION that do not end with vowels. Your result cannot contain duplicates. 
+
+SELECT DISTINCT(city) FROM station 
+WHERE city NOT LIKE '%a'
+AND city NOT LIKE '%e'
+AND city NOT LIKE '%i'
+AND city NOT LIKE '%o'
+AND city NOT LIKE '%u';
+
+--Query the list of CITY names from STATION that either do not start with vowels or do not end with vowels. Your result cannot contain duplicates.
+
+SELECT DISTINCT(city) FROM station 
+WHERE 
+(city NOT LIKE '%a' AND city NOT LIKE '%e' AND city NOT LIKE '%i' AND city NOT LIKE '%o' AND city NOT LIKE '%u') OR 
+(city NOT LIKE 'a%' AND city NOT LIKE 'e%' AND city NOT LIKE 'i%' AND city NOT LIKE 'O%' AND city NOT LIKE 'u%' );
+
+--Query the list of CITY names from STATION that do not start with vowels and do not end with vowels. Your result cannot contain duplicates.
+
+SELECT DISTINCT(city) 
+FROM station 
+WHERE 
+(city NOT LIKE '%a' AND city NOT LIKE '%e' AND city NOT LIKE '%i' AND city NOT LIKE '%o' AND city NOT LIKE '%u') AND
+(city NOT LIKE 'a%' AND city NOT LIKE 'e%' AND city NOT LIKE 'i%' AND city NOT LIKE 'O%' AND city NOT LIKE 'u%' );
+
+
+-- Query the Name of any student in STUDENTS who scored higher than  Marks. Order your output by the last three characters of each name. If two or more students both have names ending in the same last three characters (i.e.: Bobby, Robby, etc.), secondary sort them by ascending ID.
+
+SELECT name FROM STUDENTS 
+WHERE marks  > 75 
+ORDER BY RIGHT(name, 3) , id ASC;
+
+--Write a query that prints a list of employee names (i.e.: the name attribute) from the Employee table in alphabetical order.
+
+SELECT name FROM employee 
+ORDER BY 1 ASC;
+
+--Write a query that prints a list of employee names (i.e.: the name attribute) for employees in Employee having a salary greater than $2000 per month who have been employees for less than 10 months. Sort your result by ascending employee_id.
+
+SELECT name FROM employee
+WHERE salary > 2000 AND
+months < 10
+ORDER BY employee_id;
+
+/*Write a query identifying the type of each record in the TRIANGLES table using its three side lengths. Output one of the following statements for each record in the table:
+
+Equilateral: It's a triangle with  sides of equal length.
+Isosceles: It's a triangle with  sides of equal length.
+Scalene: It's a triangle with  sides of differing lengths.
+Not A Triangle: The given values of A, B, and C don't form a triangle.*/
+
+SELECT 
+CASE
+    WHEN A = B AND B = C THEN 'Equilateral'
+    WHEN A + B <= C OR A + C <= B OR B + C <= A THEN 'Not A Triangle'
+    WHEN A = B OR B = C OR A = C THEN 'Isosceles'
+    ELSE 'Scalene'
+END
+FROM TRIANGLES;
+
+--Query the total population of all cities in CITY where District is California.
+
+SELECT SUM(population) Total_population 
+FROM city 
+WHERE district = 'california';
+
+--Query the average population of all cities in CITY where District is California.
+
+SELECT AVG(population) FROM city
+WHERE district = 'california';
+
+--Query the average population for all cities in CITY, rounded down to the nearest integer.
+
+SELECT FLOOR(AVG(population)) FROM city;
+
+
+--Query the sum of the populations for all Japanese cities in CITY. The COUNTRYCODE for Japan is JPN.
+
+SELECT SUM(population) FROM city 
+WHERE countrycode = 'jpn';
+
+--Query the difference between the maximum and minimum populations in CITY.
+
+SELECT (MAX(population) - MIN(population)) FROM city;
+
+--Samantha was tasked with calculating the average monthly salaries for all employees in the EMPLOYEES table, but did not realize her keyboard's  key was broken until after completing the calculation. She wants your help finding the difference between her miscalculation (using salaries with any zeros removed), and the actual average salary.
+--Write a query calculating the amount of error (i.e.:  average monthly salaries), and round it up to the next integer.
+
+SELECT CEIL(AVG(salary) - AVG(REPLACE(salary, '0',''))) FROM EMPLOYEES;
+
+--We define an employee's total earnings to be their monthly  worked, and the maximum total earnings to be the maximum total earnings for any employee in the Employee table. Write a query to find the maximum total earnings for all employees as well as the total number of employees who have maximum total earnings. Then print these values as  space-separated integers.
+
+SELECT CONCAT(AVG(salary * months), '  ', COUNT(*)) 
+FROM employee
+WHERE (salary * months ) = MAX(salary * months);
+/*Query the following two values from the STATION table:
+
+The sum of all values in LAT_N rounded to a scale of  decimal places.
+The sum of all values in LONG_W rounded to a scale of  decimal places.*/
+
+SELECT ROUND(SUM(lat_n),2),ROUND(SUM(long_w),2) FROM station;
+
+---Query the sum of Northern Latitudes (LAT_N) from STATION having values greater than  and less than . Truncate your answer to  decimal places.
+
+SELECT ROUND(SUM(lat_n),4) FROM station 
+WHERE 
+lat_n BETWEEN 38.7880 AND 137.2345;
+
+---Query the greatest value of the Northern Latitudes (LAT_N) from STATION that is less than . Truncate your answer to  decimal places.
+
+SELECT ROUND(MAX(lat_n),4)
+FROM station 
+WHERE lat_n < 137.2345;
+
+--Query the Western Longitude (LONG_W) for the largest Northern Latitude (LAT_N) in STATION that is less than . Round your answer to  decimal places.
+SELECT ROUND(long_w, 4)
+FROM station
+WHERE lat_n = (
+    SELECT MAX(lat_n)
+    FROM station
+    WHERE lat_n < 137.2345
+);
+
+--Query the smallest Northern Latitude (LAT_N) from STATION that is greater than . Round your answer to  decimal places.
+
+SELECT ROUND(lat_n,4) FROM 
+station 
+WHERE 
+lat_n = 
+(SELECT MIN(lat_n) FROM station 
+WHERE lat_n > 38.7780
+);
+
+-- Query the Western Longitude (LONG_W)where the smallest Northern Latitude (LAT_N) in STATION is greater than . Round your answer to  decimal places.
+
+SELECT ROUND(long_w,4) FROM station
+WHERE lat_n = (
+    SELECT MIN(lat_n) FROM station 
+    WHERE lat_n > 38.7780
+);
+
+--Given the CITY and COUNTRY tables, query the sum of the populations of all cities where the CONTINENT is 'Asia'.
+--Note: CITY.CountryCode and COUNTRY.Code are matching key columns.
+
+SELECT SUM(c.population) from city c 
+JOIN country cn 
+ON c.countrycode = cn.code 
+WHERE continent = 'asia' ;
+
+---Given the CITY and COUNTRY tables, query the names of all cities where the CONTINENT is 'Africa'.
+
+SELECT CITY.NAME FROM CITY JOIN 
+COUNTRY 
+ON CITY.COUNTRYCODE = COUNTRY.CODE 
+WHERE CONTINENT = 'AFRICA';
+
+--Given the CITY and COUNTRY tables, query the names of all the continents (COUNTRY.Continent) and their respective average city populations (CITY.Population) rounded down to the nearest integer.
+
+SELECT COUNTRY.CONTINENT, FLOOR(AVG(CITY.POPULATION)) FROM CITY JOIN
+COUNTRY 
+ON CITY.COUNTRYCODE = COUNTRY.CODE 
+GROUP BY CONTINENT;
+
