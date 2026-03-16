@@ -1,0 +1,40 @@
+Outliers:
+
+The total dataset will be divided into 4 quarters LIKE -- DATA ORIGIN -- Q1 -- MEDIAN -- Q3 -- DATA END
+
+Q1 = 25TH PERCENTILE 
+Q2 = 50TH PERCENTILE OR MEDIAN 
+Q3 = 75TH PERCENTILE 
+
+Inter Quartile Range IQR = (Q3 - Q1)
+
+OUTLIER RULE :
+ 
+ upper bound --> Q3 + 1.5 * IQR
+ inner bound --> Q1 - 1.5 * IQR 
+Anything outside these limits would be considered as an outlier 
+
+
+MEAN Is Usually the average. MOSTLY TAKEN FOR MOST OF THE DATABASE 
+
+IF MEAN > MEDIAN RIGHT SKEWED --> POSITIVE SKEWED 
+
+IF MEAN < MEDIAN LEFT SKEWED --> NEGATIVE SKEWED 
+
+TYPES: ARITHEMATIC, GEOMETRIC , HARMONIC 
+
+ARITHEMATIC --> sum(all data points) / number of data points  ==> MOST DATASETS 
+Geometric --> nth root over product of all data points  ==> CAGR , GROWTH RATES 
+Harmonic --> (n * product of all the data points) / sum of all data points  ==> SPEED , RATES 
+
+usually AM >= GM >= HM
+
+VARIANCE. POPULATION == (sum of (all data points - mean)squared ) divided by the count of data points 
+
+variance.sample usually preferred == (sum(all data points - mean))squared divided by number of data points -1 
+
+standard deviation =  sqrt(variance
+)
+
+
+
