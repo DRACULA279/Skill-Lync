@@ -1,4 +1,4 @@
--- Active: 1767506199827@@127.0.0.1@3306@sakila
+-- Active: 1767506199827@@127.0.0.1@3306@testdb
 -- Active: 1767506199827@@127.0.0.1@3306@superstore
 USE testdb;
 
@@ -543,4 +543,211 @@ SELECT COUNTRY.CONTINENT, FLOOR(AVG(CITY.POPULATION)) FROM CITY JOIN
 COUNTRY 
 ON CITY.COUNTRYCODE = COUNTRY.CODE 
 GROUP BY CONTINENT;
+
+
+/*	Discussions
+You are given a table, BST, containing two columns: N and P, where N represents the value of a node in Binary Tree, and P is the parent of N.
+
+
+
+Write a query to find the node type of Binary Tree ordered by the value of the node. Output one of the following for each node:
+
+Root: If node is root node.
+Leaf: If node is leaf node.
+Inner: If node is neither root nor leaf node.*/
+
+SELECT N,
+    CASE
+        WHEN P IS NULL THEN 'Root'
+        WHEN N NOT IN (SELECT P FROM bst WHERE P IS NOT NULL) THEN 'Leaf'
+        ELSE 'Inner'
+    END AS 'Node_Type'
+FROM bst
+ORDER BY N;
+
+
+
+/*
+TABLE USERS
+user_id  
+signup_date  
+country  
+device  
+
+TABLE EVENTS
+user_id  
+event_type  -- ('visit', 'add_to_cart', 'purchase')  
+event_time  
+
+Write SQL to answer:
+
+1. Funnel Metrics
+
+For last 30 days, calculate:
+
+total visitors
+users who added to cart
+users who purchased
+conversion rates:
+visit → cart
+cart → purchase
+2. Segment the Funnel
+
+Break the same metrics by:
+
+device
+country
+3. Identify the Problem Area
+
+Answer (based on your query results):
+
+Which segment (device/country) has the biggest drop in conversion?|
+
+
+*/
+
+# Total Visitors
+
+SELECT COUNT(user_id) FROM table_events
+WHERE 
+event_type = 'visit' 
+# but i think purchase,add_to_cart should be done Only by visiting the page, in such case -- remove event_type or add add_to_cart and purchase to where clause if the these attributes does not create a record of visit  
+DATEDIFF(CURRENT_DATE - event_time) <= 30;
+
+
+# users who added to cart
+SELECT DISTINCT(user_id) from events
+WHERE event_type = 'add_to_cart'
+;
+#OR 
+SELECT user_id from events
+WHERE event_type = 'add_to_cart'
+GROUP BY user_id;
+
+#users who purchased
+SELECT user_id from events
+WHERE event_type = 'purchased'
+GROUP BY user_id;
+
+#conversion rates:
+
+WITH ref AS ( 
+COUNT(CASE WHEN event = 'visit' THEN user_id END) AS vist_counts,
+COUNT(CASE WHEN event = 'add_to_cart' THEN user_id END) AS cart_count,
+COUNT(CASE WHEN event = 'purchase' THEN user_id END) AS purchase_count 
+
+FROM events) 
+
+SELECT (visit_count (visit_count - cart_count)) AS visit_to_cart,
+(cart_count - (cart_count - purchse_count))) AS 
+cart_to_purchase_funnel,
+(visit_count-(visit_count - purchase_count)) AS visit_to_purchase_funnel
+FROM ref;
+
+/*2. Segment the Funnel
+
+Break the same metrics by:
+
+device
+country*/
+
+WITH ref AS ( 
+COUNT(CASE WHEN event = 'e.visit' THEN user_id END) AS vist_counts,
+COUNT(CASE WHEN event = 'e.add_to_cart' THEN user_id END) AS cart_count,
+COUNT(CASE WHEN event = 'e.purchase' THEN user_id END) AS purchase_count 
+
+FROM events e 
+JOIN  users u
+ON u.user_id = e.user_id
+GROUP BY device,country) 
+
+/*3. Identify the Problem Area
+
+Answer (based on your query results):
+
+Which segment (device/country) has the biggest drop in conversion?|*/
+WITH ref AS ( 
+COUNT(CASE WHEN event = 'e.visit' THEN user_id END) AS vist_counts,
+COUNT(CASE WHEN event = 'e.add_to_cart' THEN user_id END) AS cart_count,
+COUNT(CASE WHEN event = 'e.purchase' THEN user_id END) AS purchase_count 
+
+SELECT (visit_count (visit_count - cart_count)) AS visit_to_cart,
+(cart_count - (cart_count - purchse_count))) AS 
+cart_to_purchase_funnel,
+(visit_count-(visit_count - purchase_count)) AS visit_to_purchase_funnel
+FROM ref
+ORDER BY visit_to_purchase_funnel DESC 
+;
+
+
+/*Amber's conglomerate corporation just acquired some new companies. Each of the companies follows this hierarchy: 
+
+Given the table schemas below, write a query to print the company_code, founder name, total number of lead managers, total number of senior managers, total number of managers, and total number of employees. Order your output by ascending company_code.
+
+Note:
+
+The tables may contain duplicate records.
+The company_code is string, so the sorting should not be numeric. For example, if the company_codes are C_1, C_2, and C_10, then the ascending company_codes will be C_1, C_10, and C_2.
+Input Format
+
+The following tables contain company data:
+
+Company: The company_code is the code of the company and founder is the founder of the company. 
+
+Lead_Manager: The lead_manager_code is the code of the lead manager, and the company_code is the code of the working company. 
+
+Senior_Manager: The senior_manager_code is the code of the senior manager, the lead_manager_code is the code of its lead manager, and the company_code is the code of the working company. 
+
+Manager: The manager_code is the code of the manager, the senior_manager_code is the code of its senior manager, the lead_manager_code is the code of its lead manager, and the company_code is the code of the working company. 
+
+Employee: The employee_code is the code of the employee, the manager_code is the code of its manager, the senior_manager_code is the code of its senior manager, the lead_manager_code is the code of its lead manager, and the company_code is the code of the working company.*/
+
+SELECT company.company_code,
+company.founder, 
+COUNT(DISTINCT(lead_manager.lead_manager_code)) Total_num_of_lead_managers, 
+COUNT(DISTINCT(senior_manager.senior_manager_code)) Total_count_of_senior_managers, 
+COUNT(DISTINCT(manager.manager_code)) Total_count_of_managers, 
+COUNT(DISTINCT(employee.employee_code))Total_count_of_employees
+
+FROM 
+
+company 
+LEFT JOIN 
+lead_manager
+ON company.company_code = lead_manager.company_code 
+LEFT JOIN 
+senior_manager
+ON lead_manager.company_code = senior_manager.company_code
+LEFT JOIN 
+manager 
+ON lead_manager.company_code = manager.company_code
+LEFT JOIN
+employee 
+ON employee.company_code = manager.company_code
+
+GROUP BY company.company_code,company.founder
+ORDER BY company.company_code;
+
+----
+
+## Second highest salary 
+
+-- first record after max salary 
+
+SELECT * FROM records 
+WHERE SALARY < (SELECT MAX(salary) FROM records)
+LIMIT 1;
+
+--Removing duplicates
+(SELECT 
+ROW NUMBER() (PARTITION BY customer_id,department ORDER BY customer_id)
+FROM customeR;
+
+SHOW TABLES;
+
+WITH helper AS (SELECT *,
+ROW_NUMBER() OVER(PARTITION BY actor_id ORDER BY last_update) AS row_id
+FROM actor)
+SELECT * FROM helper 
+WHERE row_id > 1;
 
